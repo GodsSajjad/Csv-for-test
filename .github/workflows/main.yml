@@ -1,4 +1,4 @@
-name: Build QtScrcpy from AUR
+name: Build qt5-styleplugins from AUR
 
 on:
   workflow_dispatch:
@@ -17,20 +17,16 @@ jobs:
         run: |
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git sudo curl
-          pacman -S --noconfirm libxcomposite qt5-wayland scrcpy android-tools \
-            qt5-base qt5-declarative qt5-multimedia qt5-x11extras \
-            qt5-svg qt5-tools ffmpeg gcc-libs glibc
 
-      - name: Create builder
+      - name: Create builder user
         run: |
           useradd -m builder
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-      - name: Build package
+      - name: Build qt5-styleplugins from AUR
         run: |
-          su builder -c "git clone https://aur.archlinux.org/qtscrcpy-bin.git /home/builder/qtscrcpy-bin"
-          cd /home/builder/qtscrcpy-bin
-          sed -i 's/android-sdk-platform-tools/android-tools/g' PKGBUILD
+          su builder -c "git clone https://aur.archlinux.org/qt5-styleplugins.git /home/builder/qt5-styleplugins"
+          cd /home/builder/qt5-styleplugins
           su builder -c "makepkg -s --noconfirm --skipinteg"
 
       - name: Checkout repository source
@@ -43,13 +39,12 @@ jobs:
 
       - name: Copy built package to repo root
         run: |
-          cp /home/builder/qtscrcpy-bin/*.pkg.tar.zst .
+          cp /home/builder/qt5-styleplugins/*.pkg.tar.zst .
 
       - name: Commit and push to repository
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add *.pkg.tar.zst
-          git commit -m "Add built QtScrcpy package from workflow run #${{ github.run_number }}" || echo "No changes to commit"
+          git commit -m "Add built qt5-styleplugins package from workflow run #${{ github.run_number }}" || echo "No changes to commit"
           git push
-          
