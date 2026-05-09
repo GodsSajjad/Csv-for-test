@@ -31,12 +31,11 @@ jobs:
           sed -i 's/android-sdk-platform-tools/android-tools/g' PKGBUILD
           su builder -c "makepkg -s --noconfirm --skipinteg"
 
-      - name: Create Release and Upload
+      - name: Upload to Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "build-${{ github.run_number }}"
+          tag_name: "qtscrcpy-build-${{ github.run_number }}"
           name: "QtScrcpy Build ${{ github.run_number }}"
           files: /home/builder/qtscrcpy-bin/*.pkg.tar.zst
-          generate_release_notes: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}  # از PAT استفاده کن
