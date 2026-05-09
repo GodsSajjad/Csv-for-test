@@ -16,13 +16,22 @@ jobs:
       - name: Install deps and build tools
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel git sudo curl \
-            gtk2 qt5-base
+          pacman -S --noconfirm base-devel git sudo curl
 
       - name: Create builder user
         run: |
           useradd -m builder
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+      - name: Build gtk2 from AUR
+        run: |
+          su builder -c "git clone https://aur.archlinux.org/gtk2.git /home/builder/gtk2"
+          cd /home/builder/gtk2
+          su builder -c "makepkg -s --noconfirm --skipinteg"
+
+      - name: Install gtk2 locally
+        run: |
+          sudo pacman -U /home/builder/gtk2/*.pkg.tar.zst --noconfirm
 
       - name: Build qt5-styleplugins from AUR
         run: |
