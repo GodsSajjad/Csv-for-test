@@ -7,7 +7,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write          # برای push به مخزن
+      contents: write
     container:
       image: archlinux:latest
       options: --user root
@@ -33,10 +33,13 @@ jobs:
           sed -i 's/android-sdk-platform-tools/android-tools/g' PKGBUILD
           su builder -c "makepkg -s --noconfirm --skipinteg"
 
-      - name: Checkout repository source (for commit/push)
+      - name: Checkout repository source
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fix git safe.directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Copy built package to repo root
         run: |
@@ -49,3 +52,4 @@ jobs:
           git add *.pkg.tar.zst
           git commit -m "Add built QtScrcpy package from workflow run #${{ github.run_number }}" || echo "No changes to commit"
           git push
+          
