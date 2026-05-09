@@ -13,10 +13,11 @@ jobs:
       options: --user root
 
     steps:
-      - name: Install deps
+      - name: Install deps and build tools
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel git sudo curl
+          pacman -S --noconfirm base-devel git sudo curl \
+            gtk2 qt5-base
 
       - name: Create builder user
         run: |
